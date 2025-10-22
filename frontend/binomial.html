@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Modèle Binomial - OptionPricer</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
++
++    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
++
++    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
++    <link rel="stylesheet" href="/static/css/style.css">
++    <link rel="icon" href="/static/img/favicon.ico">
++    <script src="https://cdn.plot.ly/plotly-2.14.0.min.js"></script>
++    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/katex.min.js"></script>
++    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/katex.min.css">
++    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/7.8.5/d3.min.js"></script>
++</head>
++<body>
++    <!-- Navigation Bar -->
++    <nav class="navbar navbar-expand-lg navbar-light">
++        <div class="container">
++            <a class="navbar-brand" href="/">
++                <div class="logo-container">
++                    <span class="logo-text">HA</span>
++                </div>
++                <span class="brand-text">OptionPricer</span>
++            </a>
++            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
++                <i class="fas fa-bars"></i>
++            </button>
++            <div class="collapse navbar-collapse" id="navbarNav">
++                <ul class="navbar-nav ms-auto">
++                    <li class="nav-item dropdown">
++                        <a class="nav-link dropdown-toggle active" href="#" id="modelsDropdown" role="button" data-bs-toggle="dropdown">
++                            <i class="fas fa-calculator me-1"></i> Modèles
++                        </a>
++                        <ul class="dropdown-menu">
++                            <li><a class="dropdown-item" href="/black-scholes">Black-Scholes</a></li>
++                            <li><a class="dropdown-item active" href="/binomial">Binomial</a></li>
++                        </ul>
++                    </li>
++                    <li class="nav-item">
++                        <a class="nav-link" href="/convergence">
++                            <i class="fas fa-chart-line me-1"></i> Convergence
++                        </a>
++                    </li>
++                    <li class="nav-item">
++                        <a class="nav-link" href="/exercise-boundary">
++                            <i class="fas fa-border-all me-1"></i> Frontière d'exercice
++                        </a>
++                    </li>
++                </ul>
++            </div>
++        </div>
++    </nav>
++
++    <div class="container mt-4">
++        <!-- page content omitted for brevity; uses /static paths for assets and /static/js/binomial.js for logic -->
++        <h1>Modèle Binomial (version statique)</h1>
++    </div>
++
++    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
++    <script src="/static/js/main.js"></script>
++    <script src="/static/js/binomial.js"></script>
++</body>
++</html>
++
+*** End Patch
