@@ -1,0 +1,691 @@
+/* Styles modernisés pour les pages de modèles */
+
+/* Variables globales */
+:root {
+    --primary-color: rgb(59, 59, 26);
+    --primary-color-light: rgba(59, 59, 26, 0.1);
+    --primary-color-medium: rgba(59, 59, 26, 0.2);
+    --border-radius: 8px;
+    --card-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    --dark-color: #333;
+    --text-muted: #666;
+    --color-white: #fff;
+    --color-primary: rgb(59, 59, 26);
+    --color-primary-dark: rgb(46, 46, 20);
+    --color-gray-100: #f8f9fa;
+    --color-gray-200: #e9ecef;
+    --color-gray-300: #dee2e6;
+    --primary-gradient: linear-gradient(135deg, rgb(59, 59, 26) 0%, rgb(85, 85, 37) 100%);
+}
+
+/* Styles pour les pages de modèles - En-tête modernisé */
+.model-header {
+    background-color: #f9f9f9;
+    padding: 50px 0 40px;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 40px;
+}
+
+.model-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+    color: var(--primary-color);
+}
+
+.model-icon {
+    font-size: 2.2rem;
+    color: var(--primary-color);
+    margin-right: 20px;
+    background-color: var(--primary-color-light);
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.model-description {
+    color: #666;
+    margin-bottom: 0;
+    font-size: 1.05rem;
+    line-height: 1.6;
+    max-width: 700px;
+}
+
+.formula-box {
+    background: var(--color-white);
+    border-radius: var(--border-radius);
+    padding: 20px;
+    box-shadow: var(--card-shadow);
+    font-size: 1.1rem;
+    max-width: 320px;
+    margin-left: auto;
+    border: 1px solid #eee;
+}
+
+/* Styles pour les théories et les formules - Modernisés */
+.theory-card {
+    border: 1px solid #eee;
+    border-radius: var(--border-radius);
+    box-shadow: var(--card-shadow);
+    overflow: hidden;
+    margin-bottom: 30px;
+}
+
+.theory-card .card-header {
+    background-color: #fff;
+    border-bottom: 1px solid #eee;
+    padding: 15px 20px;
+}
+
+.theory-card .card-body {
+    font-size: 0.95rem;
+    padding: 20px;
+    background-color: #fff;
+}
+
+.theory-card h4 {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0;
+    color: var(--dark-color);
+    font-size: 1.3rem;
+}
+
+.theory-card h4 i {
+    color: var(--primary-color);
+    margin-right: 10px;
+}
+
+.theory-card h5 {
+    color: var(--primary-color);
+    margin-bottom: 15px;
+    font-weight: 600;
+    font-size: 1.2rem;
+}
+
+.theory-card h6 {
+    font-weight: 600;
+    color: var(--primary-color-dark);
+    font-size: 1.05rem;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+
+.formula-container {
+    background-color: rgba(59, 59, 26, 0.03);
+    border-left: 3px solid var(--primary-color);
+    padding: 20px;
+    border-radius: 0 8px 8px 0;
+    margin-bottom: 25px;
+}
+
+.model-assumptions {
+    list-style-type: none;
+    padding-left: 0;
+    margin-top: 15px;
+}
+
+.model-assumptions li {
+    padding: 8px 0 8px 28px;
+    position: relative;
+    color: #555;
+}
+
+.model-assumptions li:before {
+    content: '\f00c';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    position: absolute;
+    left: 0;
+    color: var(--primary-color);
+}
+
+/* Styles pour les cards de résultats - Modernisés */
+.parameters-card, .results-card {
+    border: 1px solid #eee;
+    border-radius: var(--border-radius);
+    box-shadow: var(--card-shadow);
+    overflow: hidden;
+    margin-bottom: 30px;
+}
+
+.parameters-card .card-header, .results-card .card-header {
+    background-color: #fff;
+    border-bottom: 1px solid #eee;
+    padding: 15px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.parameters-card .card-body, .results-card .card-body {
+    padding: 20px;
+    background-color: #fff;
+}
+
+.card-header h4 {
+    display: flex;
+    align-items: center;
+    margin-bottom: 0;
+    color: var(--dark-color);
+    font-size: 1.3rem;
+}
+
+.card-header h4 i {
+    color: var(--primary-color);
+    margin-right: 10px;
+}
+
+.card-header .btn-sm {
+    padding: 0.3rem 0.75rem;
+    font-size: 0.85rem;
+}
+
+/* Styles pour les tableaux de prix et métriques - Modernisés */
+.price-indicators {
+    margin-bottom: 25px;
+}
+
+.price-card {
+    background: var(--primary-gradient);
+    color: white;
+    border-radius: var(--border-radius);
+    padding: 25px;
+    height: 100%;
+    text-align: center;
+    box-shadow: 0 5px 15px rgba(59, 59, 26, 0.2);
+    transition: all 0.3s ease;
+}
+
+.price-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 20px rgba(59, 59, 26, 0.25);
+}
+
+.price-label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    opacity: 0.9;
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.price-value {
+    font-size: 2.4rem;
+    font-weight: 700;
+}
+
+/* Force le texte du prix sur la page Black-Scholes en noir (override pour .price-card white) */
+#price-result-card .price-value {
+    color: #fff !important;
+}
+
+.metric-card {
+    background-color: white;
+    border: 1px solid #eee;
+    border-radius: var(--border-radius);
+    padding: 15px;
+    text-align: center;
+    height: 100%;
+    transition: all 0.3s ease;
+    box-shadow: var(--card-shadow);
+}
+
+.metric-card:hover {
+    background-color: var(--color-gray-100);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.08);
+}
+
+.metric-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.metric-value {
+    font-weight: 700;
+    font-size: 1.3rem;
+    color: var(--primary-color);
+}
+
+/* Paramètres d'arbre binomial et trinomial - Modernisés */
+.tree-param-box {
+    background-color: white;
+    border: 1px solid #eee;
+    border-radius: var(--border-radius);
+    padding: 15px;
+    text-align: center;
+    box-shadow: var(--card-shadow);
+    margin-bottom: 15px;
+}
+
+.param-label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-bottom: 5px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.param-value {
+    font-weight: 600;
+    font-size: 1.1rem;
+    color: var(--primary-color);
+}
+
+/* Styles pour l'arbre binomial - Modernisés */
+.tree-card {
+    overflow: visible;
+    border: 1px solid #eee;
+    border-radius: var(--border-radius);
+    box-shadow: var(--card-shadow);
+}
+
+.tree-container {
+    width: 100%;
+    height: 400px;
+    overflow: auto;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    padding: 15px;
+    background-color: #fcfcfc;
+}
+
+.tree-controls {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.btn-group .btn {
+    border-color: #ddd;
+}
+
+.btn-group .btn.active {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
+
+.tree-zoom-controls {
+    display: flex;
+    gap: 5px;
+}
+
+.tree-legend {
+    display: flex;
+    justify-content: center;
+    gap: 25px;
+    margin-top: 20px;
+    flex-wrap: wrap;
+}
+
+.legend-item {
+    display: flex;
+    align-items: center;
+}
+
+.legend-color {
+    width: 15px;
+    height: 15px;
+    border-radius: 3px;
+    margin-right: 8px;
+}
+
+.legend-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+/* Styles pour la page de convergence - Modernisés */
+.reference-box {
+    background-color: white;
+    border: 1px solid #eee;
+    border-radius: var(--border-radius);
+    padding: 20px;
+    text-align: center;
+    height: 100%;
+    box-shadow: var(--card-shadow);
+}
+
+.ref-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.ref-value {
+    font-weight: 700;
+    font-size: 1.2rem;
+    color: var(--primary-color);
+}
+
+/* Styles pour la page frontière d'exercice - Modernisés */
+.boundary-value-box {
+    background-color: white;
+    border: 1px solid #eee;
+    border-radius: var(--border-radius);
+    padding: 20px;
+    text-align: center;
+    height: 100%;
+    margin-bottom: 15px;
+    box-shadow: var(--card-shadow);
+}
+
+.bound-label {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-bottom: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.bound-value {
+    font-weight: 700;
+    font-size: 1.3rem;
+    color: var(--primary-color);
+}
+
+.boundary-regions {
+    margin-top: 30px;
+}
+
+.region-box {
+    padding: 20px;
+    border-radius: var(--border-radius);
+    margin-bottom: 20px;
+    box-shadow: var(--card-shadow);
+}
+
+.region-exercise {
+    background-color: rgba(244, 67, 54, 0.05);
+    border: 1px solid rgba(244, 67, 54, 0.2);
+}
+
+.region-continuation {
+    background-color: rgba(33, 150, 243, 0.05);
+    border: 1px solid rgba(33, 150, 243, 0.2);
+}
+
+.region-box h6 {
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: var(--dark-color);
+}
+
+/* Styles spécifiques pour l'affichage des formules mathématiques */
+.katex {
+    font-size: 1.1rem !important;
+}
+
+/* Styles pour la page Black-Scholes - Modernisés */
+.formula-result {
+    background-color: white;
+    border: 1px solid #eee;
+    border-radius: var(--border-radius);
+    padding: 20px;
+    height: 100%;
+    box-shadow: var(--card-shadow);
+}
+
+.param-group {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-size: 0.95rem;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #f5f5f5;
+}
+
+.param-group:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.param-label {
+    font-weight: 500;
+    color: var(--text-muted);
+}
+
+.param-value {
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+/* Surfaces 3D - Modernisées */
+.tab-pane {
+    min-height: 450px;
+}
+
+.nav-tabs {
+    border-bottom: 1px solid #eee;
+}
+
+.nav-tabs .nav-link {
+    border: none;
+    color: var(--text-muted);
+    padding: 10px 20px;
+    font-weight: 500;
+}
+
+.nav-tabs .nav-link:hover {
+    border: none;
+    color: var(--primary-color);
+}
+
+.nav-tabs .nav-link.active {
+    border: none;
+    border-bottom: 2px solid var(--primary-color);
+    color: var(--primary-color);
+    background-color: transparent;
+}
+
+.tab-content {
+    padding: 20px;
+    background-color: white;
+    border: 1px solid #eee;
+    border-top: none;
+    border-radius: 0 0 var(--border-radius) var(--border-radius);
+}
+
+/* Ajustements pour les surfaces grecques */
+#delta-surface, #gamma-surface, #theta-surface, #vega-surface, #rho-surface {
+    width: 100%;
+    height: 400px;
+}
+
+/* Styles de formulaire modernisés */
+.form-label {
+    font-weight: 500;
+    color: var(--dark-color);
+    margin-bottom: 8px;
+}
+
+.form-control {
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    padding: 10px 12px;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(59, 59, 26, 0.15);
+}
+
+.input-group-text {
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    color: #555;
+}
+
+.form-text {
+    color: #888;
+    font-size: 0.85rem;
+    margin-top: 5px;
+}
+
+/* Style des boutons amélioré */
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-color-dark);
+    border-color: var(--primary-color-dark);
+}
+
+.btn-outline-primary {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: white;
+}
+
+.btn-outline-secondary {
+    color: #555;
+    border-color: #ccc;
+}
+
+.btn-outline-secondary:hover {
+    background-color: #f1f1f1;
+    border-color: #bbb;
+    color: #333;
+}
+
+/* Sélecteurs de type et style d'option améliorés */
+.option-type-selector, .option-style-selector {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.type-option, .style-option {
+    flex: 1;
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.type-option label, .style-option label {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 15px;
+    cursor: pointer;
+    text-align: center;
+    width: 100%;
+    transition: all 0.3s ease;
+}
+
+.type-option input[type="radio"], .style-option input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+}
+
+.type-option input[type="radio"]:checked + label,
+.style-option input[type="radio"]:checked + label {
+    background-color: rgba(59, 59, 26, 0.1);
+    border-bottom: 2px solid var(--primary-color);
+}
+
+.type-option label i, .style-option label i {
+    font-size: 1.5rem;
+    margin-bottom: 5px;
+    color: var(--primary-color);
+}
+
+/* Message d'accueil */
+.welcome-icon {
+    font-size: 3.5rem;
+    color: var(--primary-color);
+    margin-bottom: 25px;
+    animation: float 3s ease-in-out infinite;
+}
+
+@keyframes float {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0); }
+}
+
+#welcome-message {
+    background-color: white;
+    border-radius: var(--border-radius);
+    padding: 40px;
+    box-shadow: var(--card-shadow);
+    text-align: center;
+    border: 1px solid #eee;
+}
+
+#welcome-message h3 {
+    color: var(--primary-color);
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+#welcome-message p {
+    color: #666;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+#loading {
+    background-color: rgba(255, 255, 255, 0.8);
+    border-radius: var(--border-radius);
+    box-shadow: var(--card-shadow);
+}
+
+/* Responsive - Modernisé */
+@media (max-width: 768px) {
+    .model-header {
+        padding: 30px 0;
+    }
+    
+    .model-title {
+        font-size: 1.8rem;
+    }
+    
+    .model-icon {
+        width: 50px;
+        height: 50px;
+        font-size: 1.8rem;
+    }
+    
+    .formula-box {
+        margin: 20px auto 0;
+        max-width: 100%;
+    }
+    
+    .tree-container {
+        height: 300px;
+    }
+    
+    .price-value {
+        font-size: 1.8rem;
+    }
+    
+    .tree-controls {
+        flex-direction: column;
+        gap: 10px;
+    }
+}

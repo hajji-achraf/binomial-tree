@@ -1,0 +1,5 @@
+flask==2.3.3
+numpy==1.26.4
+scipy==1.11.3
+gunicorn==21.2.0
+flask-cors==3.1.1

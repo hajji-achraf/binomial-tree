@@ -1,0 +1,11 @@
+# Example fly.toml – you'll normally generate this with `flyctl launch`
+app = "your-app-name-here"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  PORT = "8080"
+
+[experimental]
+  auto_rollback = true

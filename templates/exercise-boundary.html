@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Frontière Optimale d'Exercice - OptionPricer</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.plot.ly/plotly-2.14.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/katex.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/katex.min.css">
+</head>
+<body>
+    <!-- Background Pattern -->
+    <div class="background-pattern"></div>
+    
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <div class="logo-container">
+                    <span class="logo-text">HA</span>
+                </div>
+                <span class="brand-text">OptionPricer</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="modelsDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-calculator me-1"></i> Modèles
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item" href="/black-scholes">Black-Scholes</a></li>
+                            <li><a class="dropdown-item" href="/binomial">Binomial</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/convergence">
+                            <i class="fas fa-chart-line me-1"></i> Convergence
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="/exercise-boundary">
+                            <i class="fas fa-border-all me-1"></i> Frontière d'exercice
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header with Description -->
+    <section class="model-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="model-title">
+                        <i class="fas fa-border-all model-icon"></i>
+                        Frontière Optimale d'Exercice
+                    </h1>
+                    <p class="model-description">
+                        La frontière optimale d'exercice est la limite qui sépare la région où il est optimal d'exercer une option américaine 
+                        de la région où il est préférable de la conserver. Cette page permet de visualiser cette frontière pour les puts américains,
+                        avec ou sans régimes markoviens.
+                    </p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <div class="formula-box">
+                        <span id="boundary-formula"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Alert sur les calls américains -->
+    <div class="container mt-3">
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle me-2"></i>
+            <strong>Note importante:</strong> En absence de dividendes, il n'existe pas de frontière d'exercice optimal pour un call américain, car il n'est jamais optimal de l'exercer avant échéance. Cette page se concentre donc sur l'analyse des puts américains.
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="container mt-3">
+        <!-- Tabs for standard and regime models -->
+        <ul class="nav nav-tabs mb-3" id="boundaryTabs" role="tablist">
+            <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="standard-tab" data-bs-toggle="tab" data-bs-target="#standard-model" type="button" role="tab">Modèle Standard</button>
+            </li>
+            <li class="nav-item" role="presentation">
+                <button class="nav-link" id="regime-tab" data-bs-toggle="tab" data-bs-target="#regime-model" type="button" role="tab">Modèle à Régimes Markoviens</button>
+            </li>
+        </ul>
+        
+        <div class="tab-content">
+            <!-- Standard Model Tab -->
+            <div class="tab-pane fade show active" id="standard-model" role="tabpanel">
+                <div class="row">
+                    <!-- Input Parameters Card -->
+                    <div class="col-md-4">
+                        <div class="card parameters-card mb-4">
+                            <div class="card-header">
+                                <h4><i class="fas fa-sliders-h me-2"></i>Paramètres</h4>
+                            </div>
+                            <div class="card-body">
+                                <form id="standard-form">
+                                    <!-- Prix spot -->
+                                    <div class="mb-3">
+                                        <label for="spot-price-std" class="form-label">Prix spot (S₀)</label>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" id="spot-price-std" min="0.01" step="0.01" value="100">
+                                            <span class="input-group-text"><i class="fas fa-euro-sign"></i></span>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Prix d'exercice -->
+                                    <div class="mb-3">
+                                        <label for="strike-price-std" class="form-label">Prix d'exercice (K)</label>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" id="strike-price-std" min="0.01" step="0.01" value="100">
+                                            <span class="input-group-text"><i class="fas fa-euro-sign"></i></span>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Maturité -->
+                                    <div class="mb-3">
+                                        <label for="time-to-maturity-std" class="form-label">Maturité (T)</label>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" id="time-to-maturity-std" min="0.01" step="0.01" value="1">
+                                            <span class="input-group-text">années</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Taux sans risque -->
+                                    <div class="mb-3">
+                                        <label for="risk-free-rate-std" class="form-label">Taux sans risque (r)</label>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" id="risk-free-rate-std" min="0" step="0.1" value="5">
+                                            <span class="input-group-text">%</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Volatilité -->
+                                    <div class="mb-3">
+                                        <label for="volatility-std" class="form-label">Volatilité (σ)</label>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" id="volatility-std" min="0.1" step="0.1" value="20">
+                                            <span class="input-group-text">%</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Nombre d'étapes -->
+                                    <div class="mb-3">
+                                        <label for="steps-std" class="form-label">Nombre d'étapes</label>
+                                        <input type="number" class="form-control" id="steps-std" min="10" max="1000" step="10" value="50">
+                                    </div>
+                                    
+                                    <!-- Bouton de calcul -->
+                                    <div class="d-grid">
+                                        <button type="submit" id="calculate-std-btn" class="btn btn-primary">
+                                            <i class="fas fa-calculator me-2"></i>Calculer la frontière
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Results and Visualization -->
+                    <div class="col-md-8">
+                        <div class="card results-card mb-4">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h4><i class="fas fa-chart-bar me-2"></i>Frontière optimale d'exercice</h4>
+                                <div>
+                                    <button class="btn btn-sm btn-outline-secondary" id="export-std">
+                                        <i class="fas fa-download me-1"></i>Exporter
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <!-- Prix critique -->
+                                <div class="row price-indicators mb-3">
+                                    <div class="col-md-6 mb-3">
+                                        <div class="boundary-value-box">
+                                            <div class="bound-label">Prix critique actuel</div>
+                                            <div class="bound-value" id="boundary-std-value">--</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6 mb-3">
+                                        <div class="price-card">
+                                            <div class="price-label">Prix de l'option</div>
+                                            <div class="price-value" id="price-std-value">--</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Graphique de la frontière d'exercice -->
+                                <div id="boundary-std-plot" style="width: 100%; height: 400px;"></div>
+                                
+                                <div class="boundary-regions mt-4">
+                                    <div class="row">
+                                        <div class="col-md-6 text-center">
+                                            <div class="region-box region-exercise">
+                                                <h6>Région d'exercice</h6>
+                                                <p>S < Sf(t)</p>
+                                                <div>Exercice immédiat optimal</div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6 text-center">
+                                            <div class="region-box region-continuation">
+                                                <h6>Région de continuation</h6>
+                                                <p>S ≥ Sf(t)</p>
+                                                <div>Conserver l'option est optimal</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Markov Regime Model Tab -->
+            <div class="tab-pane fade" id="regime-model" role="tabpanel">
+                <div class="row">
+                    <!-- Input Parameters Card -->
+                    <div class="col-md-4">
+                        <div class="card parameters-card mb-4">
+                            <div class="card-header">
+                                <h4><i class="fas fa-sliders-h me-2"></i>Paramètres</h4>
+                            </div>
+                            <div class="card-body">
+                                <form id="regime-form">
+                                    <!-- Prix spot -->
+                                    <div class="mb-3">
+                                        <label for="spot-price-reg" class="form-label">Prix spot (S₀)</label>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" id="spot-price-reg" min="0.01" step="0.01" value="100">
+                                            <span class="input-group-text"><i class="fas fa-euro-sign"></i></span>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Prix d'exercice -->
+                                    <div class="mb-3">
+                                        <label for="strike-price-reg" class="form-label">Prix d'exercice (K)</label>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" id="strike-price-reg" min="0.01" step="0.01" value="100">
+                                            <span class="input-group-text"><i class="fas fa-euro-sign"></i></span>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Maturité -->
+                                    <div class="mb-3">
+                                        <label for="time-to-maturity-reg" class="form-label">Maturité (T)</label>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" id="time-to-maturity-reg" min="0.01" step="0.01" value="1">
+                                            <span class="input-group-text">années</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Taux sans risque -->
+                                    <div class="mb-3">
+                                        <label for="risk-free-rate-reg" class="form-label">Taux sans risque (r)</label>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" id="risk-free-rate-reg" min="0" step="0.1" value="5">
+                                            <span class="input-group-text">%</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Paramètres des régimes -->
+                                    <div class="mb-3">
+                                        <label for="vol-low" class="form-label">Volatilité régime calme (σ₀)</label>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" id="vol-low" min="0.1" step="0.1" value="10">
+                                            <span class="input-group-text">%</span>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="vol-high" class="form-label">Volatilité régime volatile (σ₁)</label>
+                                        <div class="input-group">
+                                            <input type="number" class="form-control" id="vol-high" min="0.1" step="0.1" value="30">
+                                            <span class="input-group-text">%</span>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label for="p-same" class="form-label">Probabilité de rester dans le même régime</label>
+                                        <input type="range" class="form-range" id="p-same" min="0.5" max="0.99" step="0.01" value="0.8">
+                                        <div class="d-flex justify-content-between">
+                                            <small>0.5</small>
+                                            <small id="p-same-value">0.8</small>
+                                            <small>0.99</small>
+                                        </div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="form-label">Régime initial</label>
+                                        <div class="option-type-selector">
+                                            <div class="type-option">
+                                                <input class="form-check-input" type="radio" name="initialRegime" id="regime-calm" value="0" checked>
+                                                <label class="form-check-label" for="regime-calm">
+                                                    <span>Calme</span>
+                                                </label>
+                                            </div>
+                                            <div class="type-option">
+                                                <input class="form-check-input" type="radio" name="initialRegime" id="regime-volatile" value="1">
+                                                <label class="form-check-label" for="regime-volatile">
+                                                    <span>Volatile</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Nombre d'étapes -->
+                                    <div class="mb-3">
+                                        <label for="steps-reg" class="form-label">Nombre d'étapes</label>
+                                        <input type="number" class="form-control" id="steps-reg" min="10" max="1000" step="10" value="50">
+                                    </div>
+                                    
+                                    <!-- Bouton de calcul -->
+                                    <div class="d-grid">
+                                        <button type="submit" id="calculate-reg-btn" class="btn btn-primary">
+                                            <i class="fas fa-calculator me-2"></i>Calculer les frontières
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Results and Visualization -->
+                    <div class="col-md-8">
+                        <div class="card results-card mb-4">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h4><i class="fas fa-chart-bar me-2"></i>Frontières par régime</h4>
+                                <div>
+                                    <button class="btn btn-sm btn-outline-secondary" id="export-reg">
+                                        <i class="fas fa-download me-1"></i>Exporter
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <!-- Prix critiques -->
+                                <div class="row price-indicators mb-3">
+                                    <div class="col-md-4 mb-3">
+                                        <div class="boundary-value-box calm-regime">
+                                            <div class="bound-label">Prix critique régime calme</div>
+                                            <div class="bound-value" id="boundary-calm-value">--</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="boundary-value-box volatile-regime">
+                                            <div class="bound-label">Prix critique régime volatile</div>
+                                            <div class="bound-value" id="boundary-volatile-value">--</div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-4 mb-3">
+                                        <div class="price-card">
+                                            <div class="price-label">Prix de l'option</div>
+                                            <div class="price-value" id="price-reg-value">--</div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <!-- Graphique des frontières -->
+                                <div id="boundary-reg-plot" style="width: 100%; height: 400px;"></div>
+                                
+                                <div class="boundary-explanation mt-4">
+                                    <div class="alert alert-info">
+                                        <h6 class="mb-2"><i class="fas fa-lightbulb me-2"></i>Interprétation</h6>
+                                        <p class="mb-1">Pour un put américain, la frontière en régime volatile (σ₁) est généralement plus élevée que celle en régime calme (σ₀).</p>
+                                        <p class="mb-0">Cela crée une "zone d'indécision" entre les deux frontières, où l'exercice optimal dépend du régime courant du marché.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Matrix Visualization -->
+                        <div class="card theory-card mb-4">
+                            <div class="card-header">
+                                <h4><i class="fas fa-random me-2"></i>Matrice de transition</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-5">
+                                        <div class="transition-matrix">
+                                            <table class="table table-bordered text-center">
+                                                <thead>
+                                                    <tr>
+                                                        <th></th>
+                                                        <th>Vers calme</th>
+                                                        <th>Vers volatile</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    <tr>
+                                                        <th>De calme</th>
+                                                        <td id="p00" class="bg-light-blue">0.8</td>
+                                                        <td id="p01">0.2</td>
+                                                    </tr>
+                                                    <tr>
+                                                        <th>De volatile</th>
+                                                        <td id="p10">0.2</td>
+                                                        <td id="p11" class="bg-light-red">0.8</td>
+                                                    </tr>
+                                                </tbody>
+                                            </table>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-7">
+                                        <p class="mb-2">La matrice de transition détermine la probabilité de passer d'un régime à l'autre à chaque pas de temps:</p>
+                                        <ul>
+                                            <li><strong>p<sub>00</sub>:</strong> Probabilité de rester en régime calme</li>
+                                            <li><strong>p<sub>11</sub>:</strong> Probabilité de rester en régime volatile</li>
+                                            <li><strong>p<sub>01</sub> = p<sub>10</sub> = 1 - p<sub>same</sub>:</strong> Probabilités de changer de régime</li>
+                                        </ul>
+                                        <p class="mb-0">Plus p<sub>same</sub> est élevé, plus les régimes sont persistants.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/exercise-boundary.js') }}"></script>
+</body>
+</html>

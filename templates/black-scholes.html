@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Black-Scholes - OptionPricer</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&family=Montserrat:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link rel="icon" href="{{ url_for('static', filename='img/favicon.ico') }}">
+    <!-- KaTeX pour les formules mathématiques -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/katex.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/katex@0.16.0/dist/katex.min.js"></script>
+    <!-- Plotly pour les graphiques -->
+    <script src="https://cdn.plot.ly/plotly-2.14.0.min.js"></script>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <div class="logo-container">
+                    <span class="logo-text">HA</span>
+                </div>
+                <span class="brand-text">OptionPricer</span>
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <i class="fas fa-bars"></i>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle active" href="#" id="modelsDropdown" role="button" data-bs-toggle="dropdown">
+                            <i class="fas fa-calculator me-1"></i> Modèles
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a class="dropdown-item active" href="/black-scholes">Black-Scholes</a></li>
+                            <li><a class="dropdown-item" href="/binomial">Binomial</a></li>
+                           
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/convergence">
+                            <i class="fas fa-chart-line me-1"></i> Convergence
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/exercise-boundary">
+                            <i class="fas fa-border-all me-1"></i> Frontière d'exercice
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header with Model Description -->
+    <section class="model-header">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-8">
+                    <h1 class="model-title">
+                        <div class="model-icon"><i class="fas fa-infinity"></i></div> 
+                        Modèle de Black-Scholes
+                    </h1>
+                    <p class="model-description">
+                        Le modèle de Black-Scholes est un modèle mathématique pour la valorisation des options européennes. 
+                        Il permet d'obtenir une formule fermée pour le prix de l'option en fonction du prix du sous-jacent, du prix d'exercice, de la volatilité, du taux sans risque et de l'échéance.
+                    </p>
+                </div>
+                <div class="col-md-4 text-end">
+                    <div class="formula-box">
+                        <span id="bs-formula"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="container mt-4">
+        <div class="row">
+            <!-- Section des paramètres d'entrée -->
+            <div class="col-md-4">
+                <div class="parameters-card mb-4">
+                    <div class="card-header">
+                        <h4><i class="fas fa-sliders-h me-2"></i>Paramètres d'entrée</h4>
+                    </div>
+                    <div class="card-body">
+                        <form id="bs-form">
+                            <!-- Type d'option -->
+                            <div class="mb-3">
+                                <label class="form-label">Type d'option</label>
+                                <div class="option-type-selector">
+                                    <div class="type-option">
+                                        <input class="form-check-input" type="radio" name="optionType" id="call" checked>
+                                        <label class="form-check-label" for="call">
+                                            <i class="fas fa-arrow-up"></i>
+                                            <span>Call</span>
+                                        </label>
+                                    </div>
+                                    <div class="type-option">
+                                        <input class="form-check-input" type="radio" name="optionType" id="put">
+                                        <label class="form-check-label" for="put">
+                                            <i class="fas fa-arrow-down"></i>
+                                            <span>Put</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Prix spot -->
+                            <div class="mb-3">
+                                <label for="spot-price" class="form-label">Prix spot (S₀)</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="spot-price" min="0.01" step="0.01" value="100">
+                                    <span class="input-group-text"><i class="fas fa-euro-sign"></i></span>
+                                </div>
+                            </div>
+                            
+                            <!-- Prix d'exercice -->
+                            <div class="mb-3">
+                                <label for="strike-price" class="form-label">Prix d'exercice (K)</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="strike-price" min="0.01" step="0.01" value="100">
+                                    <span class="input-group-text"><i class="fas fa-euro-sign"></i></span>
+                                </div>
+                            </div>
+                            
+                            <!-- Maturité -->
+                            <div class="mb-3">
+                                <label for="time-to-maturity" class="form-label">Maturité (T)</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="time-to-maturity" min="0.01" step="0.01" value="1">
+                                    <span class="input-group-text">années</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Taux sans risque -->
+                            <div class="mb-3">
+                                <label for="risk-free-rate" class="form-label">Taux sans risque (r)</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="risk-free-rate" min="0" step="0.1" value="5">
+                                    <span class="input-group-text">%</span>
+                                </div>
+                            </div>
+                            
+                            <!-- Volatilité -->
+                            <div class="mb-3">
+                                <label for="volatility" class="form-label">Volatilité (σ)</label>
+                                <div class="input-group">
+                                    <input type="number" class="form-control" id="volatility" min="0.1" step="0.1" value="20">
+                                    <span class="input-group-text">%</span>
+                                </div>
+                            </div>
+
+                            <!-- Section boutons -->
+                            <div class="d-grid gap-2">
+                                <button type="submit" id="calculate-price-btn" class="btn btn-primary">
+                                    <i class="fas fa-calculator me-2"></i>Calculer le prix
+                                </button>
+                                <button type="button" id="calculate-greeks-btn" class="btn btn-outline-secondary" disabled>
+                                    <i class="fas fa-chart-bar me-2"></i>Calculer les Grecques
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Section des résultats -->
+            <div class="col-md-8">
+                <!-- Carte de résultat du prix -->
+                <div id="price-result-card" class="results-card mb-4" style="display: none;">
+                    <div class="card-header">
+                        <h4><i class="fas fa-tag me-2"></i>Résultat du prix</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="price-card">
+                                    <div class="price-label">Prix de l'option</div>
+                                    <div class="price-value" id="option-price">--</div>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="formula-result">
+                                    <div class="param-group">
+                                        <span class="param-label">d<sub>1</sub>:</span>
+                                        <span class="param-value" id="d1-value">--</span>
+                                    </div>
+                                    <div class="param-group">
+                                        <span class="param-label">d<sub>2</sub>:</span>
+                                        <span class="param-value" id="d2-value">--</span>
+                                    </div>
+                                    <div class="param-group">
+                                        <span class="param-label">N(d<sub>1</sub>):</span>
+                                        <span class="param-value" id="nd1-value">--</span>
+                                    </div>
+                                    <div class="param-group">
+                                        <span class="param-label">N(d<sub>2</sub>):</span>
+                                        <span class="param-value" id="nd2-value">--</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Graphique du prix -->
+                        <div class="mt-4">
+                            <h5>Prix en fonction du prix du sous-jacent</h5>
+                            <div id="price-chart" style="width: 100%; height: 300px;"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Carte de résultat des grecques -->
+                <div id="greeks-result-card" class="results-card mb-4" style="display: none;">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4><i class="fas fa-chart-line me-2"></i>Les Grecques</h4>
+                        <button class="btn btn-sm btn-outline-secondary" id="export-results">
+                            <i class="fas fa-download me-1"></i>Exporter
+                        </button>
+                    </div>
+                    <div class="card-body">
+                        <!-- Valeurs des grecques -->
+                        <div class="row mb-4">
+                            <div class="col-md-3 col-6 mb-3">
+                                <div class="metric-card">
+                                    <div class="metric-label">Delta (Δ)</div>
+                                    <div class="metric-value" id="delta-value">--</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-6 mb-3">
+                                <div class="metric-card">
+                                    <div class="metric-label">Gamma (Γ)</div>
+                                    <div class="metric-value" id="gamma-value">--</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-6 mb-3">
+                                <div class="metric-card">
+                                    <div class="metric-label">Theta (Θ)</div>
+                                    <div class="metric-value" id="theta-value">--</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-6 mb-3">
+                                <div class="metric-card">
+                                    <div class="metric-label">Vega (ν)</div>
+                                    <div class="metric-value" id="vega-value">--</div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 col-6 mb-3">
+                                <div class="metric-card">
+                                    <div class="metric-label">Rho (ρ)</div>
+                                    <div class="metric-value" id="rho-value">--</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Onglets pour les graphiques de grecques -->
+                        <ul class="nav nav-tabs" id="greeksTabs" role="tablist">
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link active" id="delta-tab" data-bs-toggle="tab" data-bs-target="#delta-content" type="button" role="tab">Delta</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="gamma-tab" data-bs-toggle="tab" data-bs-target="#gamma-content" type="button" role="tab">Gamma</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="theta-tab" data-bs-toggle="tab" data-bs-target="#theta-content" type="button" role="tab">Theta</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="vega-tab" data-bs-toggle="tab" data-bs-target="#vega-content" type="button" role="tab">Vega</button>
+                            </li>
+                            <li class="nav-item" role="presentation">
+                                <button class="nav-link" id="rho-tab" data-bs-toggle="tab" data-bs-target="#rho-content" type="button" role="tab">Rho</button>
+                            </li>
+                        </ul>
+                        
+                        <div class="tab-content" id="greeksTabsContent">
+                            <div class="tab-pane fade show active" id="delta-content" role="tabpanel">
+                                <div id="delta-surface" style="width: 100%; height: 400px;"></div>
+                            </div>
+                            <div class="tab-pane fade" id="gamma-content" role="tabpanel">
+                                <div id="gamma-surface" style="width: 100%; height: 400px;"></div>
+                            </div>
+                            <div class="tab-pane fade" id="theta-content" role="tabpanel">
+                                <div id="theta-surface" style="width: 100%; height: 400px;"></div>
+                            </div>
+                            <div class="tab-pane fade" id="vega-content" role="tabpanel">
+                                <div id="vega-surface" style="width: 100%; height: 400px;"></div>
+                            </div>
+                            <div class="tab-pane fade" id="rho-content" role="tabpanel">
+                                <div id="rho-surface" style="width: 100%; height: 400px;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Message d'accueil -->
+                <div id="welcome-message">
+                    <div class="welcome-icon">
+                        <i class="fas fa-infinity"></i>
+                    </div>
+                    <h3>Modèle de Black-Scholes</h3>
+                    <p>Entrez les paramètres et cliquez sur "Calculer le prix" pour valoriser l'option</p>
+                    <p class="text-muted">Vous pourrez ensuite calculer et visualiser les grecques</p>
+                </div>
+                
+                <!-- Indicateur de chargement -->
+                <div id="loading" class="text-center p-5" style="display: none;">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Chargement...</span>
+                    </div>
+                    <p class="mt-2">Calcul en cours...</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Formules et Explications -->
+        <div class="row mt-4">
+            <div class="col-12">
+                <div class="theory-card mb-4">
+                    <div class="card-header">
+                        <h4><i class="fas fa-book me-2"></i>Formules et Explications</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5>Formule de Black-Scholes</h5>
+                                <div class="formula-container mb-4">
+                                    <div id="bs-formula-call"></div>
+                                    <div id="bs-formula-put" class="mt-3"></div>
+                                    <div id="bs-d1d2" class="mt-3"></div>
+                                </div>
+                                
+                                <p>Où :</p>
+                                <ul>
+                                    <li>S₀ est le prix spot du sous-jacent</li>
+                                    <li>K est le prix d'exercice</li>
+                                    <li>r est le taux sans risque</li>
+                                    <li>σ est la volatilité</li>
+                                    <li>T est le temps jusqu'à maturité</li>
+                                    <li>N(·) est la fonction de répartition de la loi normale standard</li>
+                                </ul>
+                            </div>
+                            <div class="col-md-6">
+                                <h5>Les Grecques</h5>
+                                <div class="formula-container mb-4">
+                                    <div id="bs-delta"></div>
+                                    <p class="mt-2">Delta (Δ) mesure la sensibilité du prix de l'option par rapport au prix du sous-jacent.</p>
+                                    
+                                    <div id="bs-gamma" class="mt-3"></div>
+                                    <p class="mt-2">Gamma (Γ) mesure la sensibilité du delta par rapport au prix du sous-jacent.</p>
+                                    
+                                    <div id="bs-theta" class="mt-3"></div>
+                                    <p class="mt-2">Theta (Θ) mesure la sensibilité du prix de l'option par rapport au temps.</p>
+                                    
+                                    <div id="bs-vega" class="mt-3"></div>
+                                    <p class="mt-2">Vega (ν) mesure la sensibilité du prix de l'option par rapport à la volatilité.</p>
+                                    
+                                    <div id="bs-rho" class="mt-3"></div>
+                                    <p class="mt-2">Rho (ρ) mesure la sensibilité du prix de l'option par rapport au taux d'intérêt.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+  
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <!-- jStat: bibliothèque statistique pour la CDF normale (fallback à l'approximation interne si absent) -->
+    <script src="https://cdn.jsdelivr.net/npm/jstat@1.9.5/dist/jstat.min.js"></script>
+    <script src="{{ url_for('static', filename='js/black-scholes.js') }}"></script>
+</body>
+</html>

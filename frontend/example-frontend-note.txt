@@ -1,0 +1,8 @@
+Example change to make in one HTML file (black-scholes.html):
+- Replace: <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}"> 
+- With: <link rel="stylesheet" href="/static/css/style.css"> 
+
+- Replace script includes similarly: <script src="{{ url_for('static', filename='js/black-scholes.js') }}"></script>
+- With: <script src="/static/js/black-scholes.js"></script>
+
+- Replace any other `{{ url_for('static', filename='...') }}` usages accordingly.
